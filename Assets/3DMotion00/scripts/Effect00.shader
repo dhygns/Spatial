@@ -47,15 +47,18 @@
 			uv = frac(uv);
 			const float PI = 3.1415921685;
 			float rad = PI * rand(uv + 0.01) * 2.0 + t * 2.0;
-			float len = 0.2 + 0.8 * rand(uv + 0.02) ;
+			float len = 0.6 + 0.4 * sin(rand(uv + 0.02) + t * 1.0) ;
 			return float2(len * sin(rad), len * cos(rad));
 		}
 
+		float perlinMix(float lo, float ro, float t) {
+			return lo + smoothstep(0.0, 1.0, t) * (ro - lo);
+		}
 
 		//get grid for perlin noise.
 		float perlinGrid(float2 uv, float t) {
 			//seperate ecah grid
-			const float2 uvscale = float2(8.0, 8.0);
+			const float2 uvscale = float2(16.0, 16.0);
 			const float2 griduv = floor(uv * uvscale) / uvscale;
 
 			const float2 grid00 = perlinArrow(griduv + float2(0.0, 0.0) / uvscale, t);
@@ -68,14 +71,16 @@
 			const float2 uv01 = float2( 0.0 + uv00.x,-1.0 + uv00.y);
 			const float2 uv11 = float2(-1.0 + uv00.x,-1.0 + uv00.y);
 
+
+
 			const float flow00 = dot(grid00, uv00);
 			const float flow10 = dot(grid10, uv10);
 			const float flow01 = dot(grid01, uv01);
 			const float flow11 = dot(grid11, uv11);
 			
-			return lerp(
-				lerp(flow00, flow10, uv00.x),
-				lerp(flow01, flow11, uv00.x),
+			return perlinMix(
+				perlinMix(flow00, flow10, uv00.x),
+				perlinMix(flow01, flow11, uv00.x),
 				uv00.y) * 0.5 + 0.5;
 		}
 
@@ -88,10 +93,10 @@
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 
 			// Albedo comes from a texture tinted by color
-			float cuff = smoothstep(_Ratio - 0.03, _Ratio + 0.03, perlin(IN.uv_MainTex));
+			float cuff = smoothstep(_Ratio - 0.01, _Ratio + 0.01, perlin(IN.uv_MainTex));
 			float cufc = 1.0 - abs(cuff - 0.5) * 2.0;
 			float4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			c = lerp(c , float4(1.0, 1.0, 0.0, 1.0), cufc);
+			c = lerp(c , float4(0.25, 0.25, 1.0, 1.0), cufc);
 			o.Albedo = c.rgb;
 
 			// Metallic and smoothness come from slider variables

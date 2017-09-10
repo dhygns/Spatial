@@ -41,7 +41,7 @@ public class objMotionEffect : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-//		this._material.SetFloat ("Time", Time.time);
+		this._material.SetFloat ("_Ratio", 0.5f + 0.5f * Mathf.Sin(Time.time * 1.0f));
 		Vector3[] vertices = _mesh.vertices;
 
 		for (int idx = 0; idx < vertices.Length; idx ++){
