@@ -58,7 +58,7 @@
 		//get grid for perlin noise.
 		float perlinGrid(float2 uv, float t) {
 			//seperate ecah grid
-			const float2 uvscale = float2(16.0, 16.0);
+			const float2 uvscale = float2(3.0, 3.0);
 			const float2 griduv = floor(uv * uvscale) / uvscale;
 
 			const float2 grid00 = perlinArrow(griduv + float2(0.0, 0.0) / uvscale, t);
